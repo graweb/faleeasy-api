@@ -15,7 +15,7 @@ class SchedulesController extends Controller
 
     public function store(Request $request)
     {
-        $package = Package::where('user_id', $request->user_id)->where('situation', 1)->first();
+        $package = Package::where('user_id', $request->user_id)->where('situation', 1)->where('hour_credit', '>', 0)->first();
         $schedule = Schedule::where('day', $request->day)->where('start_hour', $request->start_hour)->get();
 
         if(is_null($package)) {
