@@ -18,31 +18,19 @@ class PackagesController extends Controller
         $package = Package::where('user_id', $request->user_id)->where('situation', 1)->first();
 
         switch($request->plan) {
-            case 1:
+            case '1 hora - Individual':
                 $credit = '1';
                 break;
-            case 2:
+            case '4 horas - Individual 1x':
                 $credit = '4';
                 break;
-            case 3:
+            case '8 horas - Individual 1x':
                 $credit = '8';
                 break;
-            case 4:
-                $credit = '8';
-                break;
-            case 5:
-                $credit = '12';
-                break;
-            case 6:
+            case '4 horas - Individual 1x - Recorrente':
                 $credit = '4';
                 break;
-            case 7:
-                $credit = '4';
-                break;
-            case 8:
-                $credit = '8';
-                break;
-            case 9:
+            case '8 horas - Individual 1x - Recorrente':
                 $credit = '8';
                 break;
         }
@@ -119,5 +107,28 @@ class PackagesController extends Controller
         }
 
         return response()->json(['response' => 'Removed'], 200);
+    }
+
+    public function balance(int $user_id)
+    {
+        $balance = Package::where('user_id', $user_id)->where('situation', 1)->first();
+
+        if(is_null($balance)) {
+            return response()->json(['hour_credit' => 0], 200);
+        }
+
+        return response()->json(['hour_credit' => $balance->hour_credit], 200);
+    }
+
+    public function by_user($id)
+    {
+        $package = Package::where('user_id', $id)->whereIn('situation', [0, 1])->get();
+
+        if(is_null($package))
+        {
+            return response()->json('', 204);
+        }
+
+        return response()->json($package, 200);
     }
 }

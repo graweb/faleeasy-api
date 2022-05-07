@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
@@ -58,11 +59,14 @@ class AuthController extends Controller
         return response($response, 201);
     }
 
-    protected function checkToken()
+    protected function checkToken(Request $request)
     {
-        $token = auth('sanctum')->check();
+        $checkToken = PersonalAccessToken::findToken($request->token);
+        if(is_null($checkToken)) {
+            return response(['message' => 'token expired'], 401);
+        }
 
-        return $token;
+        return $checkToken->tokenable;
     }
 
     public function logout(Request $request)

@@ -44,20 +44,20 @@ class NotificationsController extends Controller
 
     public function show(int $id)
     {
-        $schedule = Notification::find($id);
+        $notification = Notification::find($id);
 
-        if(is_null($schedule))
+        if(is_null($notification))
         {
             return response()->json('', 204);
         }
 
-        return response()->json($schedule);
+        return response()->json($notification);
     }
 
     public function update(int $id, Request $request)
     {
-        $schedule = Notification::find($id);
-        if(is_null($schedule))
+        $notification = Notification::find($id);
+        if(is_null($notification))
         {
             return response()->json(['erro' => 'Not found'], 404);
         }
@@ -67,10 +67,10 @@ class NotificationsController extends Controller
             'message' => $request->message,
         ];
 
-        $schedule->fill($data);
-        $schedule->save();
+        $notification->fill($data);
+        $notification->save();
 
-        return $schedule;
+        return $notification;
     }
 
     public function destroy(int $id)
@@ -82,5 +82,41 @@ class NotificationsController extends Controller
         }
 
         return response()->json(['response' => 'Removed'], 200);
+    }
+
+    public function count_by_user($id)
+    {
+        $count = Notification::where('user_id', $id)->where('situation', 0)->count();
+        return response()->json(['total' => $count], 200);
+    }
+
+    public function by_user($id)
+    {
+        $notification = Notification::where('user_id', $id)->get();
+
+        if(is_null($notification))
+        {
+            return response()->json('', 204);
+        }
+
+        return response()->json($notification, 200);
+    }
+
+    public function check_read($id)
+    {
+        $notification = Notification::find($id);
+        if(is_null($notification))
+        {
+            return response()->json(['erro' => 'Not found'], 404);
+        }
+
+        $data = [
+            'situation' => 1,
+        ];
+
+        $notification->fill($data);
+        $notification->save();
+
+        return $notification;
     }
 }
